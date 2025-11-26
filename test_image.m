@@ -20,19 +20,19 @@ end
 % On redimensionne pour que la simulation soit rapide (ex: 100x100 pixels)
 % Une image trop grande prendrait trop de temps à simuler bit par bit
 scale_factor = 0.5; % Réduire l'image (0.5 = 50% de la taille)
-img_resized = imresize(img_original, scale_factor);
-[rows, cols, channels] = size(img_resized);
+img_resized = imresize(img_original, scale_factor); // cette fonctionne permet de redimensionner l'image
+[rows, cols, channels] = size(img_resized);  // on cree 3 variables pour stocker les parametres de l'image a savoir nombre de colonne , de ligne , et nombre de  couleur disponible dans l'image
 
 fprintf('Image chargée : %dx%d pixels\n', rows, cols);
 
 %% 2. Conversion Image -> Bits (Source Binaire)
 % Aplatir l'image en un vecteur de pixels
-pixels_vec = img_resized(:); 
+pixels_vec = img_resized(:);  // mettre tous les pixels de l image sur une seule colonne . ( empiler les uns apres les autres)
 
 % Convertir en binaire (8 bits par pixel)
 % dec2bin convertit en char, on repasse en numérique
-bin_matrix = dec2bin(pixels_vec, 8); 
-bits_temp = bin_matrix.' - '0'; % Transpose pour lire bit par bit
+bin_matrix = dec2bin(pixels_vec, 8); // convertir chaque pixel(0-255) en bit (les 0 et 1)
+bits_temp = bin_matrix.' - '0'; % Transpose pour lire bit par bit (en colonne) , et on soustrait -'0' pour convertir le texte brut en nombre 
 dataIn = bits_temp(:);
 
 numBits = length(dataIn);

@@ -86,7 +86,7 @@ span = 6;               % Je définis la longueur d
 %% 2. Émetteur (Transmitter TX)du filtre en nombre de symboles
 % --- A. Génération des données ---
 % Je génère une séquence binaire aléatoire
-dataIn = randi([0 1], numBits, 1); 
+dataIn = randi([0 1], numBits, 1); %//ici numbits ligne et une colonne
 
 % --- B. Modulation en Bande de Base (QPSK Manuelle) ---
 % Je transforme les bits en symboles complexes
@@ -104,7 +104,6 @@ symbols_upsampled(1:sps:end) = symbols;
 
 % --- D. Filtrage de mise en forme (RRC - Root Raised Cosine) ---
 % Je génère la réponse impulsionnelle du filtre RRC
-% Note: Si la fonction rcosdesign n'est pas dispo, on peut utiliser une approximation
 h = rcosdesign(rolloff, span, sps, 'sqrt'); 
 
 % Je réalise la convolution pour obtenir le signal temporel "continu"
