@@ -105,3 +105,5 @@ stem(1:L, dataOut(1:L), 'r--', 'DisplayName', 'Reçu');
 title('Comparaison bits (Zoom 100 premiers)');
 ylim([-0.2 1.2]);
 legend; grid on;
+
+//,,,,,,,,,,,,,,,,,,,,,,,,,,..
