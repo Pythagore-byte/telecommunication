@@ -16,7 +16,7 @@
 // dataReshaped = reshape(dataIn, k, length(dataIn)/k)';
 // bits_I = dataReshaped(:, 1); % Premier bit de chaque paire
 // bits_Q = dataReshaped(:, 2); % Second bit de chaque paire
-
+//test
 // % Mappage : 0 -> -1, 1 -> +1
 // sym_I = 2*bits_I - 1; 
 // sym_Q = 2*bits_Q - 1;  
