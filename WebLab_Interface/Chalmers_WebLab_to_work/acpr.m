@@ -6,7 +6,7 @@ function [ACPR,PSD] = acpr (x,Fs,ACPR)
 % Fs    : sampling frequency
 % ACPR  : structure with two fields (BW and Offset).
 % Hs    : The spectral estimation object (Optional).
-%
+% 
 % Output arguments:
 % ACPR  : Adjacent Channel Power Ratio, a structure with 6 fields:
 % L1 (U1) first lower (upper) adjacent channel, and L2 (U2) second lower 
