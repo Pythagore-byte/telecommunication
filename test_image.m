@@ -3,7 +3,7 @@ clear; clc; close all;
 
 %% 1. Configuration et Chargement de l'Image
 % --- Paramètres ---
-SNR_dB = 0;  % Essaie 5 dB (très bruité), 8 dB (moyen), 12 dB (parfait)
+SNR_dB = -10;  % Essaie 5 dB (très bruité), 8 dB (moyen), 12 dB (parfait)
 % ------------------
 
 % Chargement d'une image intégrée à Matlab 

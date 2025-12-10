@@ -6,7 +6,7 @@ clear; clc; close all;
 
 %% 1. Paramètres de Simulation
 numBits = 100000;         % Nombre de bits (élevé pour précision)
-SNR_dB_range = 0:2:18;    % Plage de SNR
+SNR_dB_range = 0:2:12;    % Plage de SNR
 sps = 4;                  % Sur-échantillonnage (Samples per Symbol)
 rolloff = 0.5;            % Filtre RRC
 span = 6;

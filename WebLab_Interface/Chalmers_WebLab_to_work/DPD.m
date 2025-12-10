@@ -67,8 +67,27 @@ for n=1:NbIter
         PD.x=u;
         figure('DefaultAxesFontSize',20,'WindowStyle','docked','NumberTitle','off');
     end
+    
+    % --- AJOUT SECURITE WEBLAB (Anti-Crash) ---
+    peak_val = max(abs(PD.x));
+    if peak_val > 1
+        fprintf('  [Safety] Signal DPD trop fort (Peak=%.2f). Normalisation...\n', peak_val);
+        PD.x = PD.x / peak_val; % On ramène le max à 1 pour passer la sécurité
+    end
+    % ------------------------------------------
+
     % Output PA    
 [y, RMSout, Idc, Vdc] = RFWebLab_PA_meas_v1_2(PD.x, RMSin);
+
+%%
+%    if n>1
+%            PD.x=gmp(u,PD.Model);
+%    else
+%        PD.x=u;
+%        figure('DefaultAxesFontSize',20,'WindowStyle','docked','NumberTitle','off');
+%    end
+    % Output PA    
+%[y, RMSout, Idc, Vdc] = RFWebLab_PA_meas_v1_2(PD.x, RMSin);
 
 y=timealign(PD.x,y);
 

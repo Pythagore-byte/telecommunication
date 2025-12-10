@@ -48,6 +48,45 @@ dataOut = reshape(dataOutMatrix', numBits, 1);
 
 %% 5. Analyse et Visualisation
 
+%% 5. Analyse et Visualisation
+
+% Pour cette première étape : 1 échantillon par symbole
+sps = 1;
+txSignal = dataMod;
+
+% --- A. Domaine Temporel ---
+figure('Name', 'Analyses Temporelle et Fréquentielle');
+subplot(2,1,1);
+
+Nplot = min(200, length(txSignal));       % on trace max 200 échantillons
+t_axis = (0:Nplot-1)/sps;                % temps en "durées symbole"
+
+plot(t_axis, real(txSignal(1:Nplot)), 'b-', 'LineWidth', 1.5); hold on;
+plot(t_axis, imag(txSignal(1:Nplot)), 'r--', 'LineWidth', 1.5);
+grid on;
+title('Signal Transmis (Domaine Temporel - Zoom)');
+xlabel('Temps (en durées symbole)');
+ylabel('Amplitude');
+legend('Voie I (In-Phase)', 'Voie Q (Quadrature)');
+
+% --- B. Domaine Fréquentiel (Densité Spectrale de Puissance) ---
+subplot(2,1,2);
+L = length(txSignal);
+nfft = 2^nextpow2(L);
+Y = fft(txSignal, nfft);
+f = (-nfft/2:nfft/2-1)/(nfft/sps);   % fréquence normalisée à la fréquence symbole
+
+power_spectrum = fftshift(abs(Y).^2/L);
+power_spectrum_dB = 10*log10(power_spectrum + eps);  % +eps pour éviter log(0)
+
+plot(f, power_spectrum_dB, 'k', 'LineWidth', 1.5);
+grid on;
+title('Densité Spectrale de Puissance (PSD)');
+xlabel('Fréquence Normalisée (f / Rs)');
+ylabel('Puissance (dB)');
+xlim([-2 2]);
+ylim([max(power_spectrum_dB)-60, max(power_spectrum_dB)+5]);
+
 % a) Calcul du BER (Bit Error Rate) manuellement
 errors = sum(dataIn ~= dataOut);
 bit_error_rate = errors / numBits;
