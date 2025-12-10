@@ -138,3 +138,68 @@ fprintf('\n--- Résultats Finaux ---\n');
 fprintf('EVM (Error Vector Magnitude) : %.2f %%\n', evm_rms);
 fprintf('ACPR (Canal Supérieur)       : %.2f dB\n', ACPRout.U1);
 fprintf('ACPR (Canal Inférieur)       : %.2f dB\n', ACPRout.L1);
+%% 6. Calcul du BER avec Distorsion PA (Tâche III)
+fprintf('\n--- Performance BER (Bit Error Rate) ---\n');
+
+% --- CORRECTION : AJOUT DU RÉCEPTEUR NUMÉRIQUE ---
+% PAout est le signal temporel (sur-échantillonné par 4).
+% Il faut le filtrer et le sous-échantillonner pour retrouver les symboles.
+
+% 1. Filtrage Adapté (Matched Filter)
+rxFiltered_PA = conv(PAout, h, 'same');
+
+% 2. Sous-échantillonnage (Downsampling) : On garde 1 point sur 4
+rxSym_PA = rxFiltered_PA(1:sps:end);
+
+% 3. Normalisation
+% On compense le gain du filtre RRC
+rxSym_PA = rxSym_PA / sum(h.^2);
+
+% On compense le gain de l'ampli (AGC) pour avoir une puissance unitaire
+% On utilise un calcul simple de gain moyen entre émis et reçu
+gain_est = (sym' * rxSym_PA) / (sym' * sym);
+rxSym_PA = rxSym_PA / gain_est;
+
+% --- DÉMODULATION ---
+rx_bits = zeros(length(dataIn), 1);
+
+if M == 4 % QPSK
+    rx_bits_I = real(rxSym_PA) > 0;
+    rx_bits_Q = imag(rxSym_PA) > 0;
+    rx_bits = reshape([rx_bits_I rx_bits_Q]', [], 1);
+    
+elseif M == 16 % 16-QAM
+    % Dénormalisation pour retrouver les niveaux entiers (-3, -1, 1, 3)
+    rx_denorm = rxSym_PA * sqrt(10); 
+    
+    rI = real(rx_denorm); rQ = imag(rx_denorm);
+    dec_I = zeros(size(rI)); dec_Q = zeros(size(rQ));
+    
+    % Seuils de décision 16-QAM (-2, 0, 2)
+    dec_I(rI<-2)=0; dec_I(rI>=-2 & rI<0)=1; dec_I(rI>=0 & rI<2)=2; dec_I(rI>=2)=3;
+    dec_Q(rQ<-2)=0; dec_Q(rQ>=-2 & rQ<0)=1; dec_Q(rQ>=0 & rQ<2)=2; dec_Q(rQ>=2)=3;
+    
+    bI1=floor(dec_I/2); bI2=mod(dec_I,2);
+    bQ1=floor(dec_Q/2); bQ2=mod(dec_Q,2);
+    rx_bits = reshape([bI1 bI2 bQ1 bQ2]', [], 1);
+end
+
+% 4. Comparaison (Maintenant ils ont la même taille !)
+% On s'assure que les vecteurs sont bien colonnes
+rx_bits = rx_bits(:); 
+dataIn = dataIn(:);
+
+% Sécurité taille (au cas où un léger décalage subsiste)
+L = min(length(dataIn), length(rx_bits));
+numErrors = sum(dataIn(1:L) ~= rx_bits(1:L));
+BER_PA = numErrors / L;
+
+fprintf('Bits envoyés : %d\n', L);
+fprintf('Erreurs      : %d\n', numErrors);
+fprintf('BER Mesuré   : %.2e\n', BER_PA);
+
+if BER_PA == 0
+    fprintf('=> Transmission parfaite (Zone Linéaire)\n');
+else
+    fprintf('=> Dégradation due à la non-linéarité (Zone de Saturation)\n');
+end
